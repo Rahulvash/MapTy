@@ -18,10 +18,18 @@ const mapid = document.querySelector('#mapid');
 
 const displayWorkout = () => {
 
+    console.log("display called");
+
     let inputDistanceValue = inputDistance.value;
     let inputDurationValue = inputDuration.value;
     let inputCadenceValue = inputCadence.value;
-    let speedValue = Math.round((inputCadenceValue / inputDurationValue));
+    let inputElevationValue = inputElevation.value;
+    let speedValueCycling = Math.round(((inputDistanceValue / inputDurationValue) * 60));
+    let speedValueRunning = Math.round((inputDurationValue / inputDistanceValue) * 10) / 10;
+
+    console.log("inputDistanceValue", inputDistanceValue);
+    console.log("inputDurationValue", inputDurationValue);
+    console.log("speedValueRunning", speedValueRunning);
 
     if (inputType.value === 'Running') {
         const html = `<li class="workout workout--running" data-id="1234567890">
@@ -38,7 +46,7 @@ const displayWorkout = () => {
             </div>
             <div class="workout__details">
             <span class="workout__icon">⚡️</span>
-            <span class="workout__value">${speedValue}</span>
+            <span class="workout__value">${speedValueRunning}</span>
             <span class="workout__unit">min/km</span>
             </div>
             <div class="workout__details">
@@ -48,33 +56,35 @@ const displayWorkout = () => {
             </div>
         </li>`;
         form.classList.add('hidden');
-        form.parentNode.insertAdjacentHTML( 'beforeend', html );
+        form.parentNode.insertAdjacentHTML('beforeend', html);
 
     }
-    else if(inputType.value === 'Cycling'){
+    else if (inputType.value === 'Cycling') {
         const html = `<li class="workout workout--cycling" data-id="1234567891">
         <h2 class="workout__title">Cycling on April 5</h2>
         <div class="workout__details">
           <span class="workout__icon">🚴‍♀️</span>
-          <span class="workout__value">27</span>
+          <span class="workout__value">${inputDistanceValue}</span>
           <span class="workout__unit">km</span>
         </div>
         <div class="workout__details">
           <span class="workout__icon">⏱</span>
-          <span class="workout__value">95</span>
+          <span class="workout__value">${inputDurationValue}</span>
           <span class="workout__unit">min</span>
         </div>
         <div class="workout__details">
           <span class="workout__icon">⚡️</span>
-          <span class="workout__value">16</span>
+          <span class="workout__value">${speedValueCycling}</span>
           <span class="workout__unit">km/h</span>
         </div>
         <div class="workout__details">
           <span class="workout__icon">⛰</span>
-          <span class="workout__value">223</span>
+          <span class="workout__value">${inputElevationValue}</span>
           <span class="workout__unit">m</span>
         </div>
-      </li>`
+      </li>`;
+        form.classList.add('hidden');
+        form.parentNode.insertAdjacentHTML('beforeend', html);
     }
 }
 
@@ -125,6 +135,8 @@ if (navigator.geolocation) {
 
         function onMapClick(e) {
 
+            console.log('on mapclicked called');
+
             let mapEvent = e;
             // console.log("mapEvent",mapEvent);
             let { lat } = mapEvent.latlng;
@@ -137,6 +149,8 @@ if (navigator.geolocation) {
             inputDistance.focus();
 
             form.addEventListener('submit', (e) => {
+
+                console.log("on submit called");
                 e.preventDefault();
                 // console.log("form submit");
                 var marker = L.marker(cor).addTo(mymap);
@@ -154,13 +168,19 @@ if (navigator.geolocation) {
                     minWidth: 100,
                     autoClose: false,
                     closeOnClick: false,
-                    className: 'running-popup '
+                    className: 'running-popup'
                 }))
                     .setPopupContent(`<span>${value} on ${currentDate} ${currentMonth}</span>`)
                     .openPopup();
 
                 //`<span>${value} on ${currentDate} ${currentMonth}</span>`
                 displayWorkout();
+
+                //setting the values to null
+                inputDistance.value = '';
+                inputDuration.value = '';
+                inputCadence.value = '';
+                inputElevation.value = '';
             })
 
         }
