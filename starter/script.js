@@ -11,15 +11,15 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
-let mymap,mapEvent;
+let mymap, mapEvent;
 
 //my addition
 const mapid = document.querySelector('#mapid');
 
 
-const displayWorkout = () => {
+const displayWorkout = (currentDate, currentMonth) => {
 
-    console.log("display called");
+    //console.log("display called");
 
     let inputDistanceValue = inputDistance.value;
     let inputDurationValue = inputDuration.value;
@@ -27,14 +27,16 @@ const displayWorkout = () => {
     let inputElevationValue = inputElevation.value;
     let speedValueCycling = Math.round(((inputDistanceValue / inputDurationValue) * 60));
     let speedValueRunning = Math.round((inputDurationValue / inputDistanceValue) * 10) / 10;
+    let randomId = Math.floor(Math.random() * 10000000000);
+    randomId = randomId.toString();
 
-    console.log("inputDistanceValue", inputDistanceValue);
-    console.log("inputDurationValue", inputDurationValue);
-    console.log("speedValueRunning", speedValueRunning);
+    //console.log("inputDistanceValue", inputDistanceValue);
+    //console.log("inputDurationValue", inputDurationValue);
+    //console.log("speedValueRunning", speedValueRunning);
 
     if (inputType.value === 'Running') {
-        const html = `<li class="workout workout--running" data-id="1234567890">
-            <h2 class="workout__title">Running on April 14</h2>
+        const html = `<li class="workout workout--running" data-id=${randomId}>
+            <h2 class="workout__title">Running on ${currentMonth} ${currentDate}</h2>
             <div class="workout__details">
             <span class="workout__icon">🏃‍♂️</span>
             <span class="workout__value">${inputDistanceValue}</span>
@@ -59,10 +61,12 @@ const displayWorkout = () => {
         form.classList.add('hidden');
         form.parentNode.insertAdjacentHTML('beforeend', html);
 
+
+
     }
     else if (inputType.value === 'Cycling') {
         const html = `<li class="workout workout--cycling" data-id="1234567891">
-        <h2 class="workout__title">Cycling on April 5</h2>
+        <h2 class="workout__title">Cycling on ${currentMonth} ${currentDate}</h2>
         <div class="workout__details">
           <span class="workout__icon">🚴‍♀️</span>
           <span class="workout__value">${inputDistanceValue}</span>
@@ -92,7 +96,7 @@ const displayWorkout = () => {
 
 
 inputType.addEventListener('change', (e) => {
-    console.log("value is changed");
+    // console.log("value is changed");
     if (inputType.value === 'Cycling') {
         inputCadence.parentNode.classList.toggle('form__row--hidden');
         inputElevation.parentNode.classList.toggle('form__row--hidden');
@@ -136,7 +140,7 @@ if (navigator.geolocation) {
 
         function onMapClick(e) {
 
-            console.log('on mapclicked called');
+            //  console.log('on mapclicked called');
 
             mapEvent = e;
             // console.log("mapEvent",mapEvent);
@@ -156,27 +160,43 @@ if (navigator.geolocation) {
 }
 
 
+const myClick = () => {
+    if (containerWorkouts) {
+        console.log("event clicked");
+        //alert('data-id is',containerWorkouts.getAttribute('data-id'));
+        //containerWorkouts.lastChild.getAttribute('data-id')
+        console.log(containerWorkouts);
+        console.log(containerWorkouts.childNodes);
+        const listItem = containerWorkouts.children[1];
+        console.log(listItem);
+        containerWorkouts.removeEventListener('click', myClick);
+    }
+}
+
+containerWorkouts.addEventListener('click', myClick);
+
+
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     let { lat } = mapEvent.latlng;
     let { lng } = mapEvent.latlng;
 
     let cor = [lat, lng];
-    console.log("on submit called");
-   
-    console.log("form submit");
+    // console.log("on submit called");
+
+    //console.log("form submit");
     var marker = L.marker(cor).addTo(mymap);
     //console.log("inputType.values",inputType.values)
 
     // var value = selectedValue();
     let value = inputType.value;
-    
+
     let date = new Date();
-    console.log("valeu of type",value);
+    // console.log("valeu of type",value);
     let currentDate = date.getDate();
     let currentMonthValue = date.getMonth();
     let currentMonth = months[currentMonthValue];
-    
+
     marker.bindPopup(L.popup({
         maxWidth: 250,
         minWidth: 100,
@@ -188,7 +208,7 @@ form.addEventListener('submit', (e) => {
         .openPopup();
 
     //`<span>${value} on ${currentDate} ${currentMonth}</span>`
-    displayWorkout();
+    displayWorkout(currentDate, currentMonth);
 
     //setting the values to null
     inputDistance.value = '';
@@ -196,3 +216,5 @@ form.addEventListener('submit', (e) => {
     inputCadence.value = '';
     inputElevation.value = '';
 })
+
+
