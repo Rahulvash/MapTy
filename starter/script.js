@@ -57,7 +57,7 @@ const displayWorkout = () => {
             </div>
         </li>`;
         form.classList.add('hidden');
-        form.parentNode.insertAdjacentHTML('beforebegin', html);
+        form.parentNode.insertAdjacentHTML('beforeend', html);
 
     }
     else if (inputType.value === 'Cycling') {
@@ -85,7 +85,7 @@ const displayWorkout = () => {
         </div>
       </li>`;
         form.classList.add('hidden');
-        form.parentNode.insertAdjacentHTML('beforebegin', html);
+        form.parentNode.insertAdjacentHTML('beforeend', html);
     }
 }
 
@@ -143,11 +143,8 @@ if (navigator.geolocation) {
 
             //console.log(value);
 
-            form.classList.toggle('hidden');
+            form.classList.remove('hidden');
             inputDistance.focus();
-
-            
-
         }
 
         mymap.on('click', onMapClick);
@@ -173,17 +170,19 @@ form.addEventListener('submit', (e) => {
 
     // var value = selectedValue();
     let value = inputType.value;
+    
     let date = new Date();
-
+    console.log("valeu of type",value);
     let currentDate = date.getDate();
     let currentMonthValue = date.getMonth();
     let currentMonth = months[currentMonthValue];
+    
     marker.bindPopup(L.popup({
         maxWidth: 250,
         minWidth: 100,
         autoClose: false,
         closeOnClick: false,
-        className: 'running-popup '
+        className: `${value}-popup`
     }))
         .setPopupContent(`<span>${value} on ${currentDate} ${currentMonth}</span>`)
         .openPopup();
