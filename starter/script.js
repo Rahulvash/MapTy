@@ -11,6 +11,7 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
+let mymap,mapEvent;
 
 //my addition
 const mapid = document.querySelector('#mapid');
@@ -56,7 +57,7 @@ const displayWorkout = () => {
             </div>
         </li>`;
         form.classList.add('hidden');
-        form.parentNode.insertAdjacentHTML('beforeend', html);
+        form.parentNode.insertAdjacentHTML('beforebegin', html);
 
     }
     else if (inputType.value === 'Cycling') {
@@ -84,7 +85,7 @@ const displayWorkout = () => {
         </div>
       </li>`;
         form.classList.add('hidden');
-        form.parentNode.insertAdjacentHTML('beforeend', html);
+        form.parentNode.insertAdjacentHTML('beforebegin', html);
     }
 }
 
@@ -113,7 +114,7 @@ if (navigator.geolocation) {
 
         //console.log(latitude, longitude);
         let coords = [latitude, longitude];
-        var mymap = L.map('mapid').setView(coords, 13);
+        mymap = L.map('mapid').setView(coords, 13);
 
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -137,51 +138,15 @@ if (navigator.geolocation) {
 
             console.log('on mapclicked called');
 
-            let mapEvent = e;
+            mapEvent = e;
             // console.log("mapEvent",mapEvent);
-            let { lat } = mapEvent.latlng;
-            let { lng } = mapEvent.latlng;
 
-            let cor = [lat, lng];
             //console.log(value);
 
             form.classList.toggle('hidden');
             inputDistance.focus();
 
-            form.addEventListener('submit', (e) => {
-
-                console.log("on submit called");
-                e.preventDefault();
-                // console.log("form submit");
-                var marker = L.marker(cor).addTo(mymap);
-                //console.log("inputType.values",inputType.values)
-
-                // var value = selectedValue();
-                let value = inputType.value;
-                let date = new Date();
-
-                let currentDate = date.getDate();
-                let currentMonthValue = date.getMonth();
-                let currentMonth = months[currentMonthValue];
-                marker.bindPopup(L.popup({
-                    maxWidth: 250,
-                    minWidth: 100,
-                    autoClose: false,
-                    closeOnClick: false,
-                    className: 'running-popup'
-                }))
-                    .setPopupContent(`<span>${value} on ${currentDate} ${currentMonth}</span>`)
-                    .openPopup();
-
-                //`<span>${value} on ${currentDate} ${currentMonth}</span>`
-                displayWorkout();
-
-                //setting the values to null
-                inputDistance.value = '';
-                inputDuration.value = '';
-                inputCadence.value = '';
-                inputElevation.value = '';
-            })
+            
 
         }
 
@@ -194,3 +159,41 @@ if (navigator.geolocation) {
 }
 
 
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let { lat } = mapEvent.latlng;
+    let { lng } = mapEvent.latlng;
+
+    let cor = [lat, lng];
+    console.log("on submit called");
+   
+    console.log("form submit");
+    var marker = L.marker(cor).addTo(mymap);
+    //console.log("inputType.values",inputType.values)
+
+    // var value = selectedValue();
+    let value = inputType.value;
+    let date = new Date();
+
+    let currentDate = date.getDate();
+    let currentMonthValue = date.getMonth();
+    let currentMonth = months[currentMonthValue];
+    marker.bindPopup(L.popup({
+        maxWidth: 250,
+        minWidth: 100,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'running-popup '
+    }))
+        .setPopupContent(`<span>${value} on ${currentDate} ${currentMonth}</span>`)
+        .openPopup();
+
+    //`<span>${value} on ${currentDate} ${currentMonth}</span>`
+    displayWorkout();
+
+    //setting the values to null
+    inputDistance.value = '';
+    inputDuration.value = '';
+    inputCadence.value = '';
+    inputElevation.value = '';
+})
