@@ -21,20 +21,27 @@ const displayWorkout = (currentDate, currentMonth) => {
 
     //console.log("display called");
 
-    let inputDistanceValue = inputDistance.value;
-    let inputDurationValue = inputDuration.value;
-    let inputCadenceValue = inputCadence.value;
-    let inputElevationValue = inputElevation.value;
+    let inputDistanceValue = +inputDistance.value;
+    let inputDurationValue = +inputDuration.value;
+    let inputCadenceValue = +inputCadence.value;
+    let inputElevationValue = +inputElevation.value;
     let speedValueCycling = Math.round(((inputDistanceValue / inputDurationValue) * 60));
     let speedValueRunning = Math.round((inputDurationValue / inputDistanceValue) * 10) / 10;
     let randomId = Math.floor(Math.random() * 10000000000);
     randomId = randomId.toString();
+
+    const validInputs = (...inputs) => inputs.every(input => Number.isFinite(input));
+    const allPositive = (...inputs) => inputs.every(input => input > 0);
 
     //console.log("inputDistanceValue", inputDistanceValue);
     //console.log("inputDurationValue", inputDurationValue);
     //console.log("speedValueRunning", speedValueRunning);
 
     if (inputType.value === 'Running') {
+        if(!validInputs(inputDistanceValue,inputDurationValue,inputCadenceValue) || 
+        !allPositive(inputDistanceValue,inputDurationValue,inputCadenceValue)){
+            return alert('Inputs have to be positive number')
+        }
         const html = `<li class="workout workout--running" data-id=${randomId}>
             <h2 class="workout__title">Running on ${currentMonth} ${currentDate}</h2>
             <div class="workout__details">
@@ -60,11 +67,16 @@ const displayWorkout = (currentDate, currentMonth) => {
         </li>`;
         form.classList.add('hidden');
         form.parentNode.insertAdjacentHTML('beforeend', html);
-
+                
 
 
     }
     else if (inputType.value === 'Cycling') {
+
+        if(!validInputs(inputDistanceValue,inputDurationValue,inputElevationValue) || 
+        !allPositive(inputDistanceValue,inputDurationValue)){
+            return alert('Inputs have to be positive number');
+        }
         const html = `<li class="workout workout--cycling" data-id="1234567891">
         <h2 class="workout__title">Cycling on ${currentMonth} ${currentDate}</h2>
         <div class="workout__details">
@@ -118,6 +130,7 @@ if (navigator.geolocation) {
 
         //console.log(latitude, longitude);
         let coords = [latitude, longitude];
+        console.log(coords);
         mymap = L.map('mapid').setView(coords, 13);
 
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -207,7 +220,6 @@ form.addEventListener('submit', (e) => {
         .setPopupContent(`<span>${value} on ${currentDate} ${currentMonth}</span>`)
         .openPopup();
 
-    //`<span>${value} on ${currentDate} ${currentMonth}</span>`
     displayWorkout(currentDate, currentMonth);
 
     //setting the values to null
